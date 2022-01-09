@@ -1,46 +1,43 @@
-'use strict';
-let mixin = require('./util/mixin');
-let camelize = require('./util/camelize');
-function Config(options, StateMachine) {
-	options = options ?? {};
-	this.options = options; // preserving original options can be useful (e.g visualize plugin)
-	this.defaults = StateMachine.defaults;
-	this.states = [];
-	this.transitions = [];
-	this.map = {};
-	this.lifecycle = this.configureLifecycle();
-	this.init = this.configureInitTransition(options.init);
-	this.data = this.configureData(options.data);
-	this.methods = this.configureMethods(options.methods);
-	this.map[this.defaults.wildcard] = {};
-	this.configureTransitions(options.transitions ?? []);
-	this.plugins = this.configurePlugins(options.plugins, StateMachine.plugin);
-}
-mixin(Config.prototype, {
-	addState: function (name) {
+let {prepend, mixin} = require('./util.js');
+module.exports = class Config {
+	constructor (options = {}, StateMachine) {
+		this.options = options; // preserving original options can be useful (e.g visualize plugin)
+		this.defaults = StateMachine.defaults;
+		this.states = [];
+		this.transitions = [];
+		this.map = {};
+		this.lifecycle = this.configureLifecycle();
+		this.init = this.configureInitTransition(options.init);
+		this.data = this.configureData(options.data);
+		this.methods = this.configureMethods(options.methods);
+		this.map[this.defaults.wildcard] = {};
+		this.configureTransitions(options.transitions ?? []);
+		this.plugins = this.configurePlugins(options.plugins, StateMachine.plugin);
+	}
+	addState(name) {
 		if (!this.map[name]) {
 			this.states.push(name);
 			this.addStateLifecycleNames(name);
 			this.map[name] = {};
 		}
-	},
-	addStateLifecycleNames: function (name) {
-		this.lifecycle.onEnter[name] = camelize.prepended('onEnter', name);
-		this.lifecycle.onLeave[name] = camelize.prepended('onLeave', name);
-		this.lifecycle.on[name] = camelize.prepended('on', name);
-	},
-	addTransition: function (name) {
+	}
+	addStateLifecycleNames(name) {
+		this.lifecycle.onEnter[name] = prepend('onEnter', name);
+		this.lifecycle.onLeave[name] = prepend('onLeave', name);
+		this.lifecycle.on[name] = prepend('on', name);
+	}
+	addTransition(name) {
 		if (this.transitions.indexOf(name) < 0) {
 			this.transitions.push(name);
 			this.addTransitionLifecycleNames(name);
 		}
-	},
-	addTransitionLifecycleNames: function (name) {
-		this.lifecycle.onBefore[name] = camelize.prepended('onBefore', name);
-		this.lifecycle.onAfter[name] = camelize.prepended('onAfter', name);
-		this.lifecycle.on[name] = camelize.prepended('on', name);
-	},
-	mapTransition: function (transition) {
+	}
+	addTransitionLifecycleNames(name) {
+		this.lifecycle.onBefore[name] = prepend('onBefore', name);
+		this.lifecycle.onAfter[name] = prepend('onAfter', name);
+		this.lifecycle.on[name] = prepend('on', name);
+	}
+	mapTransition(transition) {
 		let name = transition.name;
 		let from = transition.from;
 		let to = transition.to;
@@ -51,8 +48,8 @@ mixin(Config.prototype, {
 		this.addTransition(name);
 		this.map[from][name] = transition;
 		return transition;
-	},
-	configureLifecycle: function () {
+	}
+	configureLifecycle() {
 		return {
 			onBefore: {transition: 'onBeforeTransition'},
 			onAfter: {transition: 'onAfterTransition'},
@@ -60,8 +57,8 @@ mixin(Config.prototype, {
 			onLeave: {state: 'onLeaveState'},
 			on: {transition: 'onTransition'}
 		};
-	},
-	configureInitTransition: function (init) {
+	}
+	configureInitTransition(init) {
 		if (typeof init === 'string') {
 			return this.mapTransition(mixin({}, this.defaults.init, {to: init, active: true}));
 		} else if (typeof init === 'object') {
@@ -70,24 +67,20 @@ mixin(Config.prototype, {
 			this.addState(this.defaults.init.from);
 			return this.defaults.init;
 		}
-	},
-	configureData: function (data) {
+	}
+	configureData(data) {
 		if (typeof data === 'function') {
 			return data;
 		} else if (typeof data === 'object') {
-			return function () {
-				return data;
-			};
+			return (() => data);
 		} else {
-			return function () {
-				return {};
-			};
+			return (() => {});
 		}
-	},
-	configureMethods: function (methods) {
+	}
+	configureMethods(methods) {
 		return methods ?? {};
-	},
-	configurePlugins: function (plugins, builtin) {
+	}
+	configurePlugins(plugins, builtin) {
 		plugins = plugins ?? [];
 		for (let n = 0; n < plugins.length; n++) {
 			let plugin = plugins[n];
@@ -100,8 +93,8 @@ mixin(Config.prototype, {
 			}
 		}
 		return plugins;
-	},
-	configureTransitions: function (transitions) {
+	}
+	configureTransitions(transitions) {
 		let wildcard = this.defaults.wildcard;
 		for (let transition of transitions) {
 			let from = Array.isArray(transition.from) ? transition.from : [transition.from ?? wildcard];
@@ -110,20 +103,17 @@ mixin(Config.prototype, {
 				this.mapTransition({name: transition.name, from: element, to: to});
 			}
 		}
-	},
-	transitionFor: function (state, transition) {
-		let wildcard = this.defaults.wildcard;
-		return this.map[state][transition] ?? this.map[wildcard][transition];
-	},
-	transitionsFor: function (state) {
-		let wildcard = this.defaults.wildcard;
-		return Object.keys(this.map[state]).concat(Object.keys(this.map[wildcard]));
-	},
-	allStates: function () {
+	}
+	transitionFor(state, transition) {
+		return this.map[state][transition] ?? this.map[this.defaults.wildcard][transition];
+	}
+	transitionsFor(state) {
+		return Object.keys(this.map[state]).concat(Object.keys(this.map[this.defaults.wildcard]));
+	}
+	allStates() {
 		return this.states;
-	},
-	allTransitions: function () {
+	}
+	allTransitions() {
 		return this.transitions;
 	}
-});
-module.exports = Config;
+};
