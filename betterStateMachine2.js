@@ -23,19 +23,16 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
-
-// 0 (util/mixin.js)
-function mixin(target, ...sources) {
-	for (let source of sources) {
-		for (let key in source) {
-			if (Object.hasOwn(source, key)) {
-				target[key] = source[key];
-			}
-		}
+// util.js
+class Exception {
+	constructor (message, transition, from, to, current) {
+		this.message = message;
+		this.transition = transition;
+		this.from = from;
+		this.to = to;
+		this.current = current;
 	}
-	return target;
 }
-// 2 (util/camelize.js)
 function camelize(label) {
 	if (label.length === 0) {
 		return label;
@@ -55,17 +52,30 @@ function prepend(prepend, label) {
 	label = camelize(label);
 	return prepend + label[0].toUpperCase() + label.substring(1);
 }
-// 6 (util/exception.js)
-class Exception {
-	constructor (message, transition, from, to, current) {
-		this.message = message;
-		this.transition = transition;
-		this.from = from;
-		this.to = to;
-		this.current = current;
+function mixin(target, ...sources) {
+	for (let source of sources) {
+		for (let key in source) {
+			if (Object.hasOwn(source, key)) {
+				target[key] = source[key];
+			}
+		}
+	}
+	return target;
+}
+function hook(fsm, name, additional) {
+	let plugins = fsm.config.plugins;
+	let args = [fsm.context];
+	if (additional) {
+		args = args.concat(additional);
+	}
+	for (let plugin of plugins) {
+		let method = plugin[name];
+		if (method) {
+			method.apply(plugin, args);
+		}
 	}
 }
-// 3 (config.js)
+// config.js
 class Config {
 	constructor (options = {}, StateMachine) {
 		this.options = options; // preserving original options can be useful (e.g visualize plugin)
@@ -184,7 +194,7 @@ class Config {
 		return this.transitions;
 	}
 }
-// 4 (jsm.js)
+// jsm.js
 let UNOBSERVED = [null, []];
 class JSM {
 	constructor (context, config) {
@@ -332,21 +342,7 @@ class JSM {
 		throw new Exception("transition is invalid while previous transition is still in progress", transition, from, to, this.state);
 	}
 }
-// 1 (plugin.js)
-function hook(fsm, name, additional) {
-	let plugins = fsm.config.plugins;
-	let args = [fsm.context];
-	if (additional) {
-		args = args.concat(additional);
-	}
-	for (let plugin of plugins) {
-		let method = plugin[name];
-		if (method) {
-			method.apply(plugin, args);
-		}
-	}
-}
-// 5 (app.js)
+// app.js
 function apply(instance, options) {
 	build(instance, new Config(options, StateMachine));
 	instance._fsm();
