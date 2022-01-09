@@ -1,40 +1,28 @@
-'use strict'
-
-//-------------------------------------------------------------------------------------------------
-
-var mixin = require('./util/mixin');
-
-//-------------------------------------------------------------------------------------------------
-
+'use strict';
+let mixin = require('./util/mixin');
 module.exports = {
-
-  build: function(target, config) {
-    var n, max, plugin, plugins = config.plugins;
-    for(n = 0, max = plugins.length ; n < max ; n++) {
-      plugin = plugins[n];
-      if (plugin.methods)
-        mixin(target, plugin.methods);
-      if (plugin.properties)
-        Object.defineProperties(target, plugin.properties);
-    }
-  },
-
-  hook: function(fsm, name, additional) {
-    var n, max, method, plugin,
-        plugins = fsm.config.plugins,
-        args    = [fsm.context];
-
-    if (additional)
-      args = args.concat(additional)
-
-    for(n = 0, max = plugins.length ; n < max ; n++) {
-      plugin = plugins[n]
-      method = plugins[n][name]
-      if (method)
-        method.apply(plugin, args);
-    }
-  }
-
-}
-
-//-------------------------------------------------------------------------------------------------
+	build: function (target, config) {
+		let plugins = config.plugins;
+		for (let plugin of plugins) {
+			if (plugin.methods) {
+				mixin(target, plugin.methods);
+			}
+			if (plugin.properties) {
+				Object.defineProperties(target, plugin.properties);
+			}
+		}
+	},
+	hook: function (fsm, name, additional) {
+		let plugins = fsm.config.plugins;
+		let args = [fsm.context];
+		if (additional) {
+			args = args.concat(additional);
+		}
+		for (let plugin of plugins) {
+			let method = plugin[name];
+			if (method) {
+				method.apply(plugin, args);
+			}
+		}
+	}
+};
