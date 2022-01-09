@@ -1,13 +1,12 @@
-'use strict';
-let camelize = require('../util/camelize');
+let {camelize, prepend} = require('../util.js');
 module.exports = function (options = {}) {
 	let past = camelize(options.name || options.past || 'history');
 	let future = camelize( options.future || 'future');
-	let clear = camelize.prepended('clear', past);
-	let back = camelize.prepended(past, 'back');
-	let forward = camelize.prepended(past, 'forward');
-	let canBack = camelize.prepended('can', back);
-	let canForward = camelize.prepended('can', forward);
+	let clear = prepend('clear', past);
+	let back = prepend(past, 'back');
+	let forward = prepend(past, 'forward');
+	let canBack = prepend('can', back);
+	let canForward = prepend('can', forward);
 	let max = options.max;
 	let plugin = {
 		configure: function (config) {
