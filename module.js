@@ -105,9 +105,7 @@ class Config {
 		this.lifecycle.on[name] = prepend('on', name);
 	}
 	mapTransition(transition) {
-		let name = transition.name;
-		let from = transition.from;
-		let to = transition.to;
+		let {name, from, to} = transition;
 		this.addState(from);
 		if (typeof to !== 'function') {
 			this.addState(to);
@@ -381,7 +379,6 @@ export default class StateMachine {
 	constructor (options) {
 		return apply(this ?? {}, options);
 	}
-	/* Change once static fields reach Stage 4
 	static version = '3.0.1';
 	static apply = apply;
 	static defaults = {
@@ -390,7 +387,7 @@ export default class StateMachine {
 			name: 'init',
 			from: 'none'
 		}
-	} */
+	};
 	static factory() {
 		let cstor = (typeof arguments[0] === 'function') ? arguments[0] : () => this._fsm(...arguments);
 		let options = arguments[(typeof arguments[0] === 'function') ? 1 : 0] ?? {};
@@ -400,12 +397,3 @@ export default class StateMachine {
 		return cstor;
 	};
 }
-StateMachine.version = '3.0.1';
-StateMachine.apply = apply;
-StateMachine.defaults = {
-	wildcard: '*',
-	init: {
-		name: 'init',
-		from: 'none'
-	}
-};

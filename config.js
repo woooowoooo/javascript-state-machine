@@ -38,9 +38,7 @@ module.exports = class Config {
 		this.lifecycle.on[name] = prepend('on', name);
 	}
 	mapTransition(transition) {
-		let name = transition.name;
-		let from = transition.from;
-		let to = transition.to;
+		let {name, from, to} = transition;
 		this.addState(from);
 		if (typeof to !== 'function') {
 			this.addState(to);

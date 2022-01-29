@@ -52,7 +52,6 @@ module.exports = class StateMachine {
 	constructor (options) {
 		return apply(this ?? {}, options);
 	}
-	/* Change once static fields reach Stage 4
 	static version = '3.0.1';
 	static apply = apply;
 	static defaults = {
@@ -61,7 +60,7 @@ module.exports = class StateMachine {
 			name: 'init',
 			from: 'none'
 		}
-	} */
+	};
 	static factory() {
 		let cstor = (typeof arguments[0] === 'function') ? arguments[0] : () => this._fsm(...arguments);
 		let options = arguments[(typeof arguments[0] === 'function') ? 1 : 0] ?? {};
@@ -70,13 +69,4 @@ module.exports = class StateMachine {
 		cstor.prototype._fsm.config = config; // convenience access to shared config without needing an instance
 		return cstor;
 	};
-};
-StateMachine.version = '3.0.1';
-StateMachine.apply = apply;
-StateMachine.defaults = {
-	wildcard: '*',
-	init: {
-		name: 'init',
-		from: 'none'
-	}
 };
