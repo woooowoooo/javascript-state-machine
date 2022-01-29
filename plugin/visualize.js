@@ -70,10 +70,10 @@ dotcfg.transition = function (name, from, to, dot, config, options, output) {
 	}
 };
 function pad(name) {
-	return " " + name + " ";
+	return ` ${name} `;
 }
 function quote(name) {
-	return "\"" + name + "\"";
+	return `"${name}"`;
 }
 function dotify(dotcfg = {}) {
 	let name = dotcfg.name ?? 'fsm';
@@ -81,9 +81,9 @@ function dotify(dotcfg = {}) {
 	let transitions = dotcfg.transitions ?? [];
 	let rankdir = dotcfg.rankdir;
 	let output = [];
-	output.push("digraph " + quote(name) + " {");
+	output.push(`digraph ${quote(name)} {`);
 	if (rankdir) {
-		output.push("  rankdir=" + rankdir + ";");
+		output.push(`  rankdir=${rankdir};`);
 	}
 	for (let state of states) {
 		output.push(dotify.state(state));
@@ -95,10 +95,10 @@ function dotify(dotcfg = {}) {
 	return output.join("\n");
 }
 dotify.state = function (state) {
-	return "  " + quote(state) + ";";
+	return `  ${quote(state)};`;
 };
 dotify.edge = function (edge) {
-	return "  " + quote(edge.from) + " -> " + quote(edge.to) + dotify.edge.attr(edge) + ";";
+	return `  ${quote(edge.from)} -> ${quote(edge.to) + dotify.edge.attr(edge)};`;
 };
 dotify.edge.attr = function (edge) {
 	let keys = Object.keys(edge).sort();
@@ -108,7 +108,7 @@ dotify.edge.attr = function (edge) {
 			output.push(key + "=" + quote(edge[key]));
 		}
 	}
-	return output.length > 0 ? " [ " + output.join("; ") + " ]" : "";
+	return output.length > 0 ? ` [ ${output.join("; ")} ]` : "";
 };
 visualize.dotcfg = dotcfg;
 visualize.dotify = dotify;
