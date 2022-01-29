@@ -1,8 +1,7 @@
 function visualize(fsm, options) {
 	return dotify(dotcfg(fsm, options));
 }
-function dotcfg(fsm, options) {
-	options = options || {};
+function dotcfg(fsm, options = {}) {
 	let config = dotcfg.fetch(fsm);
 	let name = options.name;
 	let rankdir = dotcfg.rankdir(options.orientation);

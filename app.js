@@ -7,7 +7,7 @@ function apply(instance, options) {
 	return instance;
 }
 function build(target, config) {
-	if ((typeof target !== 'object') ?? Array.isArray(target)) {
+	if ((typeof target !== 'object') || Array.isArray(target)) {
 		throw Error('StateMachine can only be applied to objects');
 	}
 	for (let plugin of config.plugins) { // pluginHelper.build

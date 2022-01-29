@@ -73,12 +73,12 @@ class Config {
 		this.states = [];
 		this.transitions = [];
 		this.map = {};
+		this.map[this.defaults.wildcard] = {};
 		this.lifecycle = this.configureLifecycle();
 		this.init = this.configureInitTransition(options.init);
 		this.data = this.configureData(options.data);
-		this.methods = this.configureMethods(options.methods);
-		this.map[this.defaults.wildcard] = {};
-		this.configureTransitions(options.transitions ?? []);
+		this.methods = options.methods ?? {};
+		this.configureTransitions(options.transitions);
 		this.plugins = this.configurePlugins(options.plugins, StateMachine.plugin);
 	}
 	addState(name) {
@@ -144,12 +144,8 @@ class Config {
 			return (() => {});
 		}
 	}
-	configureMethods(methods) {
-		return methods ?? {};
-	}
-	configurePlugins(plugins, builtin) {
-		plugins = plugins ?? [];
-		for (let n = 0; n < plugins.length; n++) {
+	configurePlugins(plugins = [], builtin) { // builtin is unused?
+		for (let n in plugins) {
 			let plugin = plugins[n];
 			if (typeof plugin === 'function') {
 				let plugin = plugin();
@@ -161,7 +157,7 @@ class Config {
 		}
 		return plugins;
 	}
-	configureTransitions(transitions) {
+	configureTransitions(transitions = []) {
 		let wildcard = this.defaults.wildcard;
 		for (let transition of transitions) {
 			let from = Array.isArray(transition.from) ? transition.from : [transition.from ?? wildcard];
@@ -340,7 +336,7 @@ function apply(instance, options) {
 	return instance;
 }
 function build(target, config) {
-	if ((typeof target !== 'object') ?? Array.isArray(target)) {
+	if ((typeof target !== 'object') || Array.isArray(target)) {
 		throw Error('StateMachine can only be applied to objects');
 	}
 	for (let plugin of config.plugins) { // pluginHelper.build
