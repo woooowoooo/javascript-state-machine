@@ -52,16 +52,6 @@ function prepend(prepend, label) {
 	label = camelize(label);
 	return prepend + label[0].toUpperCase() + label.substring(1);
 }
-function mixin(target, ...sources) {
-	for (let source of sources) {
-		for (let key in source) {
-			if (Object.hasOwn(source, key)) {
-				target[key] = source[key];
-			}
-		}
-	}
-	return target;
-}
 function hook(fsm, name, additional) {
 	let plugins = fsm.config.plugins;
 	let args = [fsm.context];
@@ -137,9 +127,9 @@ class Config {
 	}
 	configureInitTransition(init) {
 		if (typeof init === 'string') {
-			return this.mapTransition(mixin({}, this.defaults.init, {to: init, active: true}));
+			return this.mapTransition({...this.defaults.init, to: init, active: true});
 		} else if (typeof init === 'object') {
-			return this.mapTransition(mixin({}, this.defaults.init, init, {active: true}));
+			return this.mapTransition({...this.defaults.init, ...init, active: true});
 		} else {
 			this.addState(this.defaults.init.from);
 			return this.defaults.init;
@@ -204,7 +194,7 @@ class JSM {
 		this.observers = [context];
 	}
 	init(args) {
-		mixin(this.context, this.config.data.apply(this.context, args));
+		Object.assign(this.context, this.config.data.apply(this.context, args));
 		hook(this, 'init');
 		if (this.config.init.active) {
 			return this.fire(this.config.init.name, []);
@@ -355,7 +345,7 @@ function build(target, config) {
 	}
 	for (let plugin of config.plugins) { // pluginHelper.build
 		if (plugin.methods) {
-			mixin(target, plugin.methods);
+			Object.assign(target, plugin.methods);
 		}
 		if (plugin.properties) {
 			Object.defineProperties(target, plugin.properties);
@@ -369,7 +359,7 @@ function build(target, config) {
 			throw Error('use transitions to change state');
 		}
 	});
-	mixin(target, { // PublicMethods
+	Object.assign(target, { // PublicMethods
 		is: state => target._fsm.is(state),
 		can: transition => target._fsm.can(transition),
 		cannot: transition => target._fsm.cannot(transition),
@@ -380,7 +370,7 @@ function build(target, config) {
 		onInvalidTransition: (t, from, to) => target._fsm.onInvalidTransition(t, from, to),
 		onPendingTransition: (t, from, to) => target._fsm.onPendingTransition(t, from, to)
 	});
-	mixin(target, config.methods);
+	Object.assign(target, config.methods);
 	for (let transition of config.allTransitions()) {
 		target[camelize(transition)] = function () {
 			return target._fsm.fire(transition, [].slice.call(arguments));

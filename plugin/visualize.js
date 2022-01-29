@@ -1,4 +1,3 @@
-let {mixin} = require('../util.js');
 function visualize(fsm, options) {
 	return dotify(dotcfg(fsm, options));
 }
@@ -68,7 +67,7 @@ dotcfg.transition = function (name, from, to, dot, config, options, output) {
 	} else if (typeof to === 'function') {
 		// do nothing, can't display conditional transition
 	} else {
-		output.push(mixin({}, {from: from, to: to, label: pad(name)}, dot ?? {}));
+		output.push({from: from, to: to, label: pad(name), ...dot});
 	}
 };
 function pad(name) {

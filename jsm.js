@@ -1,4 +1,4 @@
-let {Exception, mixin, hook} = require('./util.js');
+let {Exception, hook} = require('./util.js');
 let UNOBSERVED = [null, []];
 modules.export = class JSM {
 	constructor (context, config) {
@@ -8,7 +8,7 @@ modules.export = class JSM {
 		this.observers = [context];
 	}
 	init(args) {
-		mixin(this.context, this.config.data.apply(this.context, args));
+		Object.assign(this.context, this.config.data.apply(this.context, args));
 		hook(this, 'init');
 		if (this.config.init.active) {
 			return this.fire(this.config.init.name, []);

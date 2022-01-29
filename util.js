@@ -26,16 +26,6 @@ function prepend(prepend, label) {
 	label = camelize(label);
 	return prepend + label[0].toUpperCase() + label.substring(1);
 }
-function mixin(target, ...sources) {
-	for (let source of sources) {
-		for (let key in source) {
-			if (Object.hasOwn(source, key)) {
-				target[key] = source[key];
-			}
-		}
-	}
-	return target;
-}
 function hook(fsm, name, additional) {
 	let plugins = fsm.config.plugins;
 	let args = [fsm.context];
@@ -49,4 +39,4 @@ function hook(fsm, name, additional) {
 		}
 	}
 }
-module.exports = {Exception, camelize, prepend, mixin, hook};
+module.exports = {Exception, camelize, prepend, hook};

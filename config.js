@@ -1,4 +1,4 @@
-let {prepend, mixin} = require('./util.js');
+let {prepend} = require('./util.js');
 module.exports = class Config {
 	constructor (options = {}, StateMachine) {
 		this.options = options; // preserving original options can be useful (e.g visualize plugin)
@@ -60,9 +60,9 @@ module.exports = class Config {
 	}
 	configureInitTransition(init) {
 		if (typeof init === 'string') {
-			return this.mapTransition(mixin({}, this.defaults.init, {to: init, active: true}));
+			return this.mapTransition({...this.defaults.init, to: init, active: true});
 		} else if (typeof init === 'object') {
-			return this.mapTransition(mixin({}, this.defaults.init, init, {active: true}));
+			return this.mapTransition({...this.defaults.init, ...init, active: true});
 		} else {
 			this.addState(this.defaults.init.from);
 			return this.defaults.init;

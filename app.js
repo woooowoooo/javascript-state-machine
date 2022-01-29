@@ -1,4 +1,4 @@
-let {camelize, mixin} = require('./util.js');
+let {camelize} = require('./util.js');
 let Config = require('./config.js');
 let JSM = require('./jsm.js');
 function apply(instance, options) {
@@ -12,7 +12,7 @@ function build(target, config) {
 	}
 	for (let plugin of config.plugins) { // pluginHelper.build
 		if (plugin.methods) {
-			mixin(target, plugin.methods);
+			Object.assign(target, plugin.methods);
 		}
 		if (plugin.properties) {
 			Object.defineProperties(target, plugin.properties);
@@ -26,7 +26,7 @@ function build(target, config) {
 			throw Error('use transitions to change state');
 		}
 	});
-	mixin(target, { // PublicMethods
+	Object.assign(target, { // PublicMethods
 		is: state => target._fsm.is(state),
 		can: transition => target._fsm.can(transition),
 		cannot: transition => target._fsm.cannot(transition),
@@ -37,7 +37,7 @@ function build(target, config) {
 		onInvalidTransition: (t, from, to) => target._fsm.onInvalidTransition(t, from, to),
 		onPendingTransition: (t, from, to) => target._fsm.onPendingTransition(t, from, to)
 	});
-	mixin(target, config.methods);
+	Object.assign(target, config.methods);
 	for (let transition of config.allTransitions()) {
 		target[camelize(transition)] = function () {
 			return target._fsm.fire(transition, [].slice.call(arguments));
