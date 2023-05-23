@@ -1,7 +1,8 @@
 import {camelize} from './util.js';
 import Config from './config.js';
 import JSM from './jsm.js';
-function apply(instance, options) {
+export const version = '3.0.1';
+export function apply(instance, options) {
 	build(instance, new Config(options, StateMachine));
 	instance._fsm();
 	return instance;
@@ -52,8 +53,6 @@ export default class StateMachine {
 	constructor (options) {
 		return apply(this ?? {}, options);
 	}
-	static version = '3.0.1';
-	static apply = apply;
 	static defaults = {
 		wildcard: '*',
 		init: {
