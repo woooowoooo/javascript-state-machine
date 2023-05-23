@@ -1,6 +1,6 @@
-let {camelize} = require('./util.js');
-let Config = require('./config.js');
-let JSM = require('./jsm.js');
+import {camelize} from './util.js';
+import Config from './config.js';
+import JSM from './jsm.js';
 function apply(instance, options) {
 	build(instance, new Config(options, StateMachine));
 	instance._fsm();
@@ -48,7 +48,7 @@ function build(target, config) {
 		target._fsm.init(arguments);
 	};
 }
-module.exports = class StateMachine {
+export default class StateMachine {
 	constructor (options) {
 		return apply(this ?? {}, options);
 	}

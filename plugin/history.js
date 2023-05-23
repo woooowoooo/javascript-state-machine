@@ -1,5 +1,5 @@
-let {camelize, prepend} = require('../util.js');
-module.exports = function (options = {}) {
+import {camelize, prepend} from '../util.js';
+export default function (options = {}) {
 	let past = camelize(options.name || options.past || 'history');
 	let future = camelize( options.future || 'future');
 	let clear = prepend('clear', past);

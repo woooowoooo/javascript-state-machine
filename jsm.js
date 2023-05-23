@@ -1,6 +1,6 @@
-let {Exception, hook} = require('./util.js');
+import {Exception, hook} from './util.js';
 let UNOBSERVED = [null, []];
-modules.export = class JSM {
+export default class JSM {
 	constructor (context, config) {
 		this.context = context;
 		this.config = config;

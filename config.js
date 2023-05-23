@@ -1,5 +1,5 @@
-let {prepend} = require('./util.js');
-module.exports = class Config {
+import {prepend} from './util.js';
+export default class Config {
 	constructor (options = {}, StateMachine) {
 		this.options = options; // preserving original options can be useful (e.g visualize plugin)
 		this.defaults = StateMachine.defaults;

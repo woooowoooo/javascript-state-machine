@@ -1,7 +1,7 @@
-function visualize(fsm, options) {
+export default function visualize(fsm, options) {
 	return dotify(dotcfg(fsm, options));
 }
-function dotcfg(fsm, options = {}) {
+export function dotcfg(fsm, options = {}) {
 	let config = dotcfg.fetch(fsm);
 	let name = options.name;
 	let rankdir = dotcfg.rankdir(options.orientation);
@@ -75,7 +75,7 @@ function pad(name) {
 function quote(name) {
 	return `"${name}"`;
 }
-function dotify(dotcfg = {}) {
+export function dotify(dotcfg = {}) {
 	let name = dotcfg.name ?? 'fsm';
 	let states = dotcfg.states ?? [];
 	let transitions = dotcfg.transitions ?? [];
@@ -110,6 +110,3 @@ dotify.edge.attr = function (edge) {
 	}
 	return output.length > 0 ? ` [ ${output.join("; ")} ]` : "";
 };
-visualize.dotcfg = dotcfg;
-visualize.dotify = dotify;
-module.exports = visualize;

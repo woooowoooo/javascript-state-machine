@@ -1,4 +1,4 @@
-class Exception {
+export class Exception {
 	constructor (message, transition, from, to, current) {
 		this.message = message;
 		this.transition = transition;
@@ -7,7 +7,7 @@ class Exception {
 		this.current = current;
 	}
 }
-function camelize(label) {
+export function camelize(label) {
 	if (label.length === 0) {
 		return label;
 	}
@@ -22,11 +22,11 @@ function camelize(label) {
 	}
 	return result;
 }
-function prepend(prepend, label) {
+export function prepend(prepend, label) {
 	label = camelize(label);
 	return prepend + label[0].toUpperCase() + label.substring(1);
 }
-function hook(fsm, name, additional) {
+export function hook(fsm, name, additional) {
 	let plugins = fsm.config.plugins;
 	let args = [fsm.context];
 	if (additional) {
@@ -39,4 +39,3 @@ function hook(fsm, name, additional) {
 		}
 	}
 }
-module.exports = {Exception, camelize, prepend, hook};
